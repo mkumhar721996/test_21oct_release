@@ -6,4 +6,10 @@ export async function seedDefects(request: APIRequest, count: number) {
   if (!res.ok()) throw new Error(`seeding ${count} defects failed: ${res.status()}`);
 }
 
+/** Switches the stub API: "on" answers GET /defects with 500, "malformed" with a 200 non-array body, "off" restores it. */
+export async function setApiFailing(request: APIRequest, mode: "on" | "off" | "malformed") {
+  const res = await request.post(`http://localhost:3101/__fail/${mode}`);
+  if (!res.ok()) throw new Error(`setting api failure mode ${mode} failed: ${res.status()}`);
+}
+
 type APIRequest = APIRequestContext;
