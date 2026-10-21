@@ -13,6 +13,18 @@ export interface Defect {
   reportedAt: string;
 }
 
+export type NewDefectInput = {
+  title: string;
+  severity: DefectSeverity;
+  area: string;
+  steps: string;
+  attachmentId?: string;
+};
+
+export function validateNewDefect(input: Pick<NewDefectInput, "title">): { title?: string } {
+  return input.title.trim() ? {} : { title: "Enter a title for the defect." };
+}
+
 export interface StatusCounts {
   open: number;
   inProgress: number;

@@ -3,6 +3,7 @@ import {
   clampPage,
   countByStatus,
   pageOf,
+  validateNewDefect,
   sortByReported,
   type Defect,
   type DefectStatus,
@@ -73,5 +74,14 @@ describe("clampPage", () => {
     expect(clampPage(undefined, 3)).toBe(1);
     expect(clampPage("0", 3)).toBe(1);
     expect(clampPage("2", 3)).toBe(2);
+  });
+});
+
+describe("validateNewDefect", () => {
+  it("flags a blank title", () => {
+    expect(validateNewDefect({ title: "   " })).toEqual({ title: "Enter a title for the defect." });
+  });
+  it("accepts a title", () => {
+    expect(validateNewDefect({ title: "Crash" })).toEqual({});
   });
 });

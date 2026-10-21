@@ -316,6 +316,12 @@ a { color: var(--color-primary); }
 .pager-controls { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
 @media (max-width: 40em) { .count-grid { gap: var(--space-2); } .count-num { font-size: var(--font-size-lg); } }
 
+/* New defect */
+.breadcrumbs { display: flex; flex-wrap: wrap; gap: var(--space-1); list-style: none; margin: 0; padding: 0; font-size: var(--font-size-sm); color: var(--color-muted); }
+.breadcrumbs li + li::before { content: "\2215"; margin-right: var(--space-1); }
+.form-actions { justify-content: flex-end; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
 /* App shell */
 .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
 .shell-header { border-bottom: var(--border-width) solid var(--color-border); background: var(--color-bg); }

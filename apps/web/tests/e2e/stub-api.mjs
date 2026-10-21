@@ -26,12 +26,52 @@ function build(n) {
 }
 
 let data = build(45);
+let created = 0;
+let lastCreated = null;
 
 createServer((req, res) => {
   const seed = /^\/__seed\/(\d+)$/.exec(req.url ?? "");
   if (req.method === "POST" && seed) {
     data = build(Number(seed[1]));
     res.writeHead(204).end();
+    return;
+  }
+  if (req.method === "POST" && req.url === "/defects/attachments") {
+    const chunks = [];
+    req.on("data", (c) => chunks.push(c));
+    req.on("end", () => {
+      const raw = Buffer.concat(chunks).toString("latin1");
+      const name = /filename="([^"]*)"/.exec(raw)?.[1] ?? "";
+      const reply = (status, body) =>
+        res.writeHead(status, { "content-type": "application/json" }).end(JSON.stringify(body));
+      if (name.endsWith(".exe")) {
+        reply(415, { message: "That file type is not supported. Choose an image, PDF or text file." });
+      } else if (name.includes("fail")) {
+        reply(502, { message: "We could not upload that file. Try again or submit without it." });
+      } else {
+        reply(201, { attachmentId: `ATT-${name}`, name });
+      }
+    });
+    return;
+  }
+  if (req.method === "POST" && req.url === "/defects") {
+    const chunks = [];
+    req.on("data", (c) => chunks.push(c));
+    req.on("end", () => {
+      created += 1;
+      let body = {};
+      try {
+        body = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+      } catch {
+        // keep empty body
+      }
+      lastCreated = { id: `DEF-NEW-${created}`, reporterId: req.headers["x-user-id"] ?? null, body };
+      res.writeHead(201, { "content-type": "application/json" }).end(JSON.stringify({ id: lastCreated.id }));
+    });
+    return;
+  }
+  if (req.method === "GET" && req.url === "/__last-created") {
+    res.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify(lastCreated));
     return;
   }
   if (req.method === "GET" && req.url === "/defects") {
