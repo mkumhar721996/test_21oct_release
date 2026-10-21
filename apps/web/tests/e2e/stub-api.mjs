@@ -26,12 +26,28 @@ function build(n) {
 }
 
 let data = build(45);
+let failMode = "off";
 
 createServer((req, res) => {
   const seed = /^\/__seed\/(\d+)$/.exec(req.url ?? "");
   if (req.method === "POST" && seed) {
     data = build(Number(seed[1]));
+    failMode = "off";
     res.writeHead(204).end();
+    return;
+  }
+  const fail = /^\/__fail\/(on|off|malformed)$/.exec(req.url ?? "");
+  if (req.method === "POST" && fail) {
+    failMode = fail[1];
+    res.writeHead(204).end();
+    return;
+  }
+  if (req.method === "GET" && req.url === "/defects" && failMode === "on") {
+    res.writeHead(500).end();
+    return;
+  }
+  if (req.method === "GET" && req.url === "/defects" && failMode === "malformed") {
+    res.writeHead(200, { "content-type": "application/json" }).end("{}");
     return;
   }
   if (req.method === "GET" && req.url === "/defects") {
