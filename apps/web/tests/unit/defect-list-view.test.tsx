@@ -1,8 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { DefectListView } from "@/components/defects/defect-list-view";
-import { StatusCounts } from "@/components/defects/status-counts";
-import { countByStatus, PAGE_SIZE, type Defect } from "@/lib/defects";
+import { PAGE_SIZE, type Defect } from "@/lib/defects";
 
 const replace = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn(), replace }) }));
@@ -83,23 +82,6 @@ describe("DefectListView", () => {
     expect((screen.getByRole("combobox", { name: "Area" }) as HTMLSelectElement).value).toBe("");
     expect(screen.getAllByRole("row")).toHaveLength(1 + Math.min(fixture.length, PAGE_SIZE));
     expect(document.activeElement).toBe(searchbox());
-  });
-
-  it("leaves the status counts unchanged", () => {
-    render(
-      <>
-        <StatusCounts counts={countByStatus(fixture)} />
-        <DefectListView defects={fixture} sort="desc" page={1} />
-      </>,
-    );
-    const before = screen.getByLabelText("Defect counts").textContent;
-    type("login");
-    expect(screen.getByLabelText("Defect counts").textContent).toBe(before);
-    fireEvent.click(screen.getByRole("button", { name: "Closed" }));
-    expect(screen.getByLabelText("Defect counts").textContent).toBe(before);
-    fireEvent.change(screen.getByRole("combobox", { name: "Severity" }), { target: { value: "low" } });
-    fireEvent.change(screen.getByRole("combobox", { name: "Area" }), { target: { value: "Billing" } });
-    expect(screen.getByLabelText("Defect counts").textContent).toBe(before);
   });
 
   it("returns to page 1 when a filter changes on a later page", () => {

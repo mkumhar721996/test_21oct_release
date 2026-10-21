@@ -25,15 +25,18 @@ test.describe("defect list filters, 45 defects", () => {
 
   test("severity and area combine with status (AC 3, 4, 6, 7)", async ({ page }) => {
     await page.getByRole("combobox", { name: "Severity" }).selectOption("high");
-    await page.getByRole("combobox", { name: "Area" }).selectOption("Login");
-    await page.getByRole("button", { name: "Open" }).click();
+    await page.getByRole("combobox", { name: "Area" }).selectOption("Reports");
+    await page.getByRole("button", { name: "In progress" }).click();
     const rows = page.locator("tbody tr");
+    // seed: severity high + area Reports are both i = 2 (mod 4), all in progress
+    await expect(rows).toHaveCount(11);
     const n = await rows.count();
+    expect(n).toBeGreaterThan(0);
     for (let i = 0; i < n; i++) {
       const cells = rows.nth(i).locator("td");
-      await expect(cells.nth(1)).toContainText("Open");
+      await expect(cells.nth(1)).toContainText("In progress");
       await expect(cells.nth(2)).toContainText("High");
-      await expect(cells.nth(3)).toContainText("Login");
+      await expect(cells.nth(3)).toContainText("Reports");
     }
   });
 
