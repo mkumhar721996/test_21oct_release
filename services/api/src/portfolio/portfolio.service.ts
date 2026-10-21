@@ -1,8 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { PriceFeedService } from './price-feed.service';
 import { DEMO_HOLDINGS, DEMO_SIPS, Holding, Sip } from './seed-data';
-import { STOCKS, Stock } from './stock-catalogue';
+import { Stock } from './stock-catalogue';
 
-export type HoldingView = Holding & { returns: number };
+export type HoldingView = Holding & {
+  currentValue: number;
+  returns: number;
+  dayChange: number;
+  dayChangePercent: number;
+};
 
 export interface PortfolioTotals {
   invested: number;
@@ -12,12 +18,27 @@ export interface PortfolioTotals {
 
 @Injectable()
 export class PortfolioService {
+  private readonly holdings: Holding[] = DEMO_HOLDINGS.map((h) => ({ ...h }));
+
+  constructor(private readonly feed: PriceFeedService) {}
+
   listStocks(): Stock[] {
-    return [...STOCKS];
+    return this.feed.getStocks();
   }
 
   listHoldings(): HoldingView[] {
-    return DEMO_HOLDINGS.map((h) => ({ ...h, returns: h.currentValue - h.investedAmount }));
+    const stocks = new Map(this.feed.getStocks().map((s) => [s.symbol, s]));
+    return this.holdings.map((h) => {
+      const s = stocks.get(h.symbol)!;
+      const currentValue = h.quantity * s.price;
+      return {
+        ...h,
+        currentValue,
+        returns: currentValue - h.investedAmount,
+        dayChange: h.quantity * s.dayChange,
+        dayChangePercent: s.dayChangePercent,
+      };
+    });
   }
 
   listSips(): Sip[] {

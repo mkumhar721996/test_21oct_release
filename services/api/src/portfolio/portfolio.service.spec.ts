@@ -1,9 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
+import { PriceFeedService } from './price-feed.service';
 import { HoldingView, PortfolioService } from './portfolio.service';
 import { STOCKS } from './stock-catalogue';
 
 describe('PortfolioService', () => {
-  const service = new PortfolioService();
+  const feed = new PriceFeedService(() => 1);
+  const service = new PortfolioService(feed);
   const sum = (f: (h: HoldingView) => number) => service.listHoldings().reduce((a, h) => a + f(h), 0);
 
   it('lists the catalogue', () => {
@@ -14,14 +16,6 @@ describe('PortfolioService', () => {
     expect(service.listHoldings()).toHaveLength(5);
   });
 
-  it('gives every holding invested, current value and returns', () => {
-    for (const h of service.listHoldings()) {
-      expect(typeof h.investedAmount).toBe('number');
-      expect(typeof h.currentValue).toBe('number');
-      expect(h.returns).toBe(h.currentValue - h.investedAmount);
-    }
-  });
-
   it('lists at least one SIP referencing the catalogue', () => {
     const sips = service.listSips();
     expect(sips.length).toBeGreaterThanOrEqual(1);
@@ -29,15 +23,37 @@ describe('PortfolioService', () => {
     for (const s of sips) expect(symbols).toContain(s.symbol);
   });
 
-  it('totals invested as the sum of holdings', () => {
-    expect(service.getTotals().invested).toBe(sum((h) => h.investedAmount));
+  it('seeds the same current values as before', () => {
+    expect(service.getTotals().currentValue).toBe(2850000 + 2050000 + 2016000 + 1376000 + 1380000);
   });
 
-  it('totals current value as the sum of holdings', () => {
-    expect(service.getTotals().currentValue).toBe(sum((h) => h.currentValue));
-  });
+  describe('after a price move', () => {
+    beforeAll(() => {
+      feed.tick();
+      feed.tick();
+    });
 
-  it('totals returns as the sum of holdings', () => {
-    expect(service.getTotals().returns).toBe(sum((h) => h.returns));
+    it('values holdings at the moved price', () => {
+      for (const h of service.listHoldings()) expect(h.currentValue).toBe(h.quantity * feed.getPrice(h.symbol));
+    });
+
+    it('derives returns from current value', () => {
+      for (const h of service.listHoldings()) expect(h.returns).toBe(h.currentValue - h.investedAmount);
+    });
+
+    it('derives 1D change amount and percent', () => {
+      for (const h of service.listHoldings()) {
+        const s = feed.getStocks().find((x) => x.symbol === h.symbol)!;
+        expect(h.dayChange).toBe(h.quantity * (s.price - s.previousClose));
+        expect(h.dayChangePercent).toBeCloseTo(((s.price - s.previousClose) / s.previousClose) * 100, 6);
+      }
+    });
+
+    it('totals invested, current value and returns as sums of holdings', () => {
+      const t = service.getTotals();
+      expect(t.invested).toBe(sum((h) => h.investedAmount));
+      expect(t.currentValue).toBe(sum((h) => h.currentValue));
+      expect(t.returns).toBe(sum((h) => h.returns));
+    });
   });
 });

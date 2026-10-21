@@ -1,11 +1,20 @@
-import { Controller, Get } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
+import {
+  CHART_PERIODS,
+  ChartPeriod,
+  PortfolioHistory,
+  PortfolioHistoryService,
+} from './portfolio-history.service';
 import { HoldingView, PortfolioService, PortfolioTotals } from './portfolio.service';
 import { Sip } from './seed-data';
 import { Stock } from './stock-catalogue';
 
 @Controller()
 export class PortfolioController {
-  constructor(private readonly portfolio: PortfolioService) {}
+  constructor(
+    private readonly portfolio: PortfolioService,
+    private readonly history: PortfolioHistoryService,
+  ) {}
 
   @Get('stocks')
   stocks(): Stock[] {
@@ -25,5 +34,18 @@ export class PortfolioController {
   @Get('portfolio')
   totals(): PortfolioTotals {
     return this.portfolio.getTotals();
+  }
+
+  @Get('portfolio/history')
+  getHistory(@Query('period') period: string = '1D'): PortfolioHistory {
+    if (!(CHART_PERIODS as readonly string[]).includes(period)) {
+      throw new BadRequestException(`period must be one of ${CHART_PERIODS.join(', ')}`);
+    }
+    return this.history.getHistory(period as ChartPeriod);
+  }
+
+  @Get('portfolio/periods')
+  periods(): readonly ChartPeriod[] {
+    return CHART_PERIODS;
   }
 }
