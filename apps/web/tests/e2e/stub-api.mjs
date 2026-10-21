@@ -26,12 +26,43 @@ function build(n) {
 }
 
 let data = build(45);
+let posted = {};
+const requests = [];
 
 createServer((req, res) => {
   const seed = /^\/__seed\/(\d+)$/.exec(req.url ?? "");
   if (req.method === "POST" && seed) {
     data = build(Number(seed[1]));
+    posted = {};
+    requests.length = 0;
     res.writeHead(204).end();
+    return;
+  }
+  if (req.method === "GET" && req.url === "/__requests") {
+    res.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify(requests));
+    return;
+  }
+  if (!(req.method === "GET" && req.url === "/defects")) requests.push(`${req.method} ${req.url}`);
+  const post = /^\/defects\/([^/?]+)\/comments$/.exec(req.url ?? "");
+  if (req.method === "POST" && post) {
+    const id = decodeURIComponent(post[1]);
+    let raw = "";
+    req.on("data", (c) => (raw += c));
+    req.on("end", () => {
+      if (id === "DEF-NOCOMMENT") {
+        res.writeHead(500).end();
+        return;
+      }
+      const list = (posted[id] ??= []);
+      const comment = {
+        id: `p${list.length + 1}`,
+        author: "Sam",
+        body: JSON.parse(raw).body,
+        createdAt: new Date().toISOString(),
+      };
+      list.push(comment);
+      res.writeHead(201, { "content-type": "application/json" }).end(JSON.stringify(comment));
+    });
     return;
   }
   if (req.method === "GET" && req.url === "/defects") {
@@ -48,7 +79,9 @@ createServer((req, res) => {
     const base =
       id === "DEF-NOATT"
         ? { id, title: "No extras", status: "open", severity: "low", area: "Login", reportedAt: "2026-10-01" }
-        : data.find((d) => d.id === id);
+        : id === "DEF-NOCOMMENT"
+          ? { id, title: "Comments fail", status: "open", severity: "high", area: "Login", reportedAt: "2026-10-01" }
+          : data.find((d) => d.id === id);
     if (!base) {
       res.writeHead(404).end();
       return;
@@ -60,7 +93,10 @@ createServer((req, res) => {
         description: `Description of ${base.title}`,
         assignee: bare ? null : "Dana Lee",
         attachments: bare ? [] : [{ name: "screenshot.png", url: "http://localhost/files/screenshot.png" }],
-        comments: bare ? [] : [{ id: "c1", author: "Sam", body: "Reproduced on 17.1", createdAt: "2026-10-02T10:00:00Z" }],
+        comments: [
+          ...(bare ? [] : [{ id: "c1", author: "Sam", body: "Reproduced on 17.1", createdAt: "2026-10-02T10:00:00Z" }]),
+          ...(posted[id] ?? []),
+        ],
       }),
     );
     return;

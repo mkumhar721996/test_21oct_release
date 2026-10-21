@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { DefectDetailView } from "@/components/defects/defect-detail-view";
 import type { DefectDetail } from "@/lib/defects";
 
+vi.mock("@/app/defects/[id]/actions", () => ({ postCommentAction: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 
 const full: DefectDetail = {
@@ -64,9 +65,8 @@ describe("DefectDetailView", () => {
     expect(screen.getByRole("link", { name: /back to list/i }).getAttribute("href")).toBe("/defects");
   });
 
-  it("has no assign, status or comment controls", () => {
+  it("has no assign or change-status controls", () => {
     render(<DefectDetailView defect={full} />);
-    expect(screen.queryByRole("button", { name: /assign|change status|post comment/i })).toBeNull();
-    expect(screen.queryByRole("textbox")).toBeNull();
+    expect(screen.queryByRole("button", { name: /assign|change status/i })).toBeNull();
   });
 });

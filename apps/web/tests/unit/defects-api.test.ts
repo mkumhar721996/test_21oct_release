@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getDefect, getDefects } from "@/lib/defects-api";
+import { getDefect, getDefects, postComment } from "@/lib/defects-api";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -53,5 +53,28 @@ describe("getDefect", () => {
   it("throws on a network failure", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("down")));
     await expect(getDefect("DEF-1")).rejects.toThrow(/GET \/defects\/DEF-1 failed/);
+  });
+});
+
+describe("postComment", () => {
+  it("POSTs the body to /defects/:id/comments and returns the comment", async () => {
+    vi.stubEnv("API_BASE_URL", "http://api.test");
+    const created = { id: "c2", author: "Sam", body: "hi", createdAt: "2026-10-03T09:00:00Z" };
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => created });
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(postComment("DEF-1", "hi")).resolves.toEqual(created);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls[0][0]).toBe("http://api.test/defects/DEF-1/comments");
+    expect(fetchMock.mock.calls[0][1]).toMatchObject({ method: "POST", body: JSON.stringify({ body: "hi" }) });
+  });
+
+  it("throws on a non-OK response", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 }));
+    await expect(postComment("DEF-1", "hi")).rejects.toThrow(/500/);
+  });
+
+  it("throws on a network failure", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("down")));
+    await expect(postComment("DEF-1", "hi")).rejects.toThrow(/POST \/defects\/DEF-1\/comments failed/);
   });
 });
