@@ -13,6 +13,25 @@ export interface Defect {
   reportedAt: string;
 }
 
+export interface DefectAttachment {
+  name: string;
+  url: string;
+}
+
+export interface DefectComment {
+  id: string;
+  author: string;
+  body: string;
+  createdAt: string;
+}
+
+export interface DefectDetail extends Defect {
+  description: string;
+  assignee: string | null;
+  attachments: DefectAttachment[];
+  comments: DefectComment[];
+}
+
 export interface StatusCounts {
   open: number;
   inProgress: number;

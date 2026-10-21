@@ -5,20 +5,20 @@ import { useRouter } from "next/navigation";
 import { Icon, type IconName } from "@/components/icon";
 import type { Defect, DefectSeverity, DefectStatus } from "@/lib/defects";
 
-const STATUS: Record<DefectStatus, { label: string; badge: string; icon: IconName }> = {
+export const STATUS_BADGE: Record<DefectStatus, { label: string; badge: string; icon: IconName }> = {
   open: { label: "Open", badge: "badge-danger", icon: "alert" },
   in_progress: { label: "In progress", badge: "badge-warning", icon: "loader" },
   closed: { label: "Closed", badge: "badge-success", icon: "check" },
 };
 
-const SEVERITY: Record<DefectSeverity, { label: string; badge: string }> = {
+export const SEVERITY_BADGE: Record<DefectSeverity, { label: string; badge: string }> = {
   low: { label: "Low", badge: "badge-neutral" },
   medium: { label: "Medium", badge: "badge-neutral" },
   high: { label: "High", badge: "badge-warning" },
   critical: { label: "Critical", badge: "badge-danger" },
 };
 
-const DATE_FORMAT = new Intl.DateTimeFormat("en-GB", {
+export const DATE_FORMAT = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
   month: "short",
   year: "numeric",
@@ -28,8 +28,8 @@ const DATE_FORMAT = new Intl.DateTimeFormat("en-GB", {
 export function DefectRow({ defect }: { defect: Defect }) {
   const router = useRouter();
   const href = `/defects/${defect.id}`;
-  const status = STATUS[defect.status];
-  const severity = SEVERITY[defect.severity];
+  const status = STATUS_BADGE[defect.status];
+  const severity = SEVERITY_BADGE[defect.severity];
 
   return (
     <tr
