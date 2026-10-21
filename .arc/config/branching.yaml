@@ -1,0 +1,4 @@
+# arc branching policy (ADR-0121) — only the copy on the default branch counts.
+version: 1
+template: git-flow
+integration_branch: develop
