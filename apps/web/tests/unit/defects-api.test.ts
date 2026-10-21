@@ -27,4 +27,27 @@ describe("getDefects", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 }));
     await expect(getDefects()).rejects.toThrow(/500/);
   });
+
+  it("throws when the body is not an array", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) }));
+    await expect(getDefects()).rejects.toThrow(/non-array/);
+  });
+
+  it("rejects when the body is not valid JSON", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => {
+          throw new SyntaxError("bad json");
+        },
+      }),
+    );
+    await expect(getDefects()).rejects.toThrow();
+  });
+
+  it("rejects when the network fails", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("fetch failed")));
+    await expect(getDefects()).rejects.toThrow(/fetch failed/);
+  });
 });
