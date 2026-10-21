@@ -81,3 +81,30 @@ export function clampPage(raw: string | undefined, pageCount: number): number {
   if (!Number.isFinite(n) || n < 1) return 1;
   return Math.min(n, Math.max(1, pageCount));
 }
+
+export const SEVERITIES: readonly DefectSeverity[] = ["low", "medium", "high", "critical"];
+export const AREAS = ["Login", "Billing", "Reports", "Other"] as const;
+
+export interface DefectFilters {
+  q: string;
+  statuses: DefectStatus[];
+  severity: DefectSeverity | "";
+  area: string;
+}
+
+export const EMPTY_FILTERS: DefectFilters = { q: "", statuses: [], severity: "", area: "" };
+
+export function hasActiveFilters(f: DefectFilters): boolean {
+  return f.q.trim() !== "" || f.statuses.length > 0 || f.severity !== "" || f.area !== "";
+}
+
+export function filterDefects(all: Defect[], f: DefectFilters): Defect[] {
+  const q = f.q.trim().toLowerCase();
+  return all.filter(
+    (d) =>
+      (q === "" || d.title.toLowerCase().includes(q) || d.id.toLowerCase().includes(q)) &&
+      (f.statuses.length === 0 || f.statuses.includes(d.status)) &&
+      (f.severity === "" || d.severity === f.severity) &&
+      (f.area === "" || d.area === f.area),
+  );
+}

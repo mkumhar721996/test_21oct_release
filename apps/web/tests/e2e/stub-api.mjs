@@ -2,7 +2,7 @@
 // POST /__seed/:n swaps the fixture to n generated defects.
 import { createServer } from "node:http";
 
-const AREAS = ["Login", "Billing", "Reports", "Checkout", "Profile", "Search"];
+const AREAS = ["Login", "Billing", "Reports", "Other"];
 const SEVERITIES = ["low", "medium", "high", "critical"];
 const STATUSES = ["open", "in_progress", "closed"];
 
