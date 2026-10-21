@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  AREAS,
+  EMPTY_FILTERS,
+  SEVERITIES,
   clampPage,
+  filterDefects,
+  hasActiveFilters,
+  type DefectFilters,
   countByStatus,
   pageOf,
   sortByReported,
@@ -73,5 +79,74 @@ describe("clampPage", () => {
     expect(clampPage(undefined, 3)).toBe(1);
     expect(clampPage("0", 3)).toBe(1);
     expect(clampPage("2", 3)).toBe(2);
+  });
+});
+
+describe("filterDefects", () => {
+  const mk = (
+    id: string,
+    title: string,
+    status: DefectStatus,
+    severity: Defect["severity"],
+    area: string,
+  ): Defect => ({ id, title, status, severity, area, reportedAt: "2026-10-01" });
+  const all: Defect[] = [
+    mk("DEF-1", "Login button unresponsive", "open", "high", "Login"),
+    mk("DEF-2", "Invoice total wrong", "closed", "high", "Billing"),
+    mk("DEF-3", "Report export fails", "open", "medium", "Reports"),
+    mk("DEF-4", "Login page typo", "closed", "low", "Login"),
+    mk("DEF-5", "Slow dashboard", "in_progress", "critical", "Other"),
+    mk("DEF-6", "Billing email late", "open", "low", "Billing"),
+  ];
+
+  it("exposes the fixed lists", () => {
+    expect(SEVERITIES).toEqual(["low", "medium", "high", "critical"]);
+    expect(AREAS).toEqual(["Login", "Billing", "Reports", "Other"]);
+  });
+
+  it("returns everything for empty filters, keeping order", () => {
+    expect(filterDefects(all, EMPTY_FILTERS)).toEqual(all);
+  });
+
+  it("searches title or id, trimmed and case-insensitive", () => {
+    expect(filterDefects(all, { ...EMPTY_FILTERS, q: "DEF-2" }).map((x) => x.id)).toEqual(["DEF-2"]);
+    expect(filterDefects(all, { ...EMPTY_FILTERS, q: "  LOGIN " }).map((x) => x.id)).toEqual(["DEF-1", "DEF-4"]);
+  });
+
+  it("filters by status, severity and area", () => {
+    expect(filterDefects(all, { ...EMPTY_FILTERS, statuses: ["closed"] })).toHaveLength(2);
+    expect(filterDefects(all, { ...EMPTY_FILTERS, severity: "low" }).map((x) => x.id)).toEqual(["DEF-4", "DEF-6"]);
+    expect(filterDefects(all, { ...EMPTY_FILTERS, area: "Billing" }).map((x) => x.id)).toEqual(["DEF-2", "DEF-6"]);
+  });
+
+  it("ANDs status with severity", () => {
+    const r = filterDefects(all, { ...EMPTY_FILTERS, statuses: ["open"], severity: "high" });
+    expect(r.map((x) => x.id)).toEqual(["DEF-1"]);
+  });
+
+  it("ANDs status with area", () => {
+    const r = filterDefects(all, { ...EMPTY_FILTERS, statuses: ["closed"], area: "Login" });
+    expect(r.map((x) => x.id)).toEqual(["DEF-4"]);
+  });
+
+  it("ANDs search with every filter", () => {
+    const f: DefectFilters = { q: "report", statuses: ["open"], severity: "medium", area: "Reports" };
+    expect(filterDefects(all, f).map((x) => x.id)).toEqual(["DEF-3"]);
+    expect(filterDefects(all, { ...f, area: "Login" })).toEqual([]);
+  });
+
+  it("treats several statuses as OR", () => {
+    const r = filterDefects(all, { ...EMPTY_FILTERS, statuses: ["open", "closed"] });
+    expect(r.some((x) => x.status === "in_progress")).toBe(false);
+    expect(r).toHaveLength(5);
+  });
+
+  it("reports active filters", () => {
+    expect(hasActiveFilters(EMPTY_FILTERS)).toBe(false);
+    expect(hasActiveFilters({ ...EMPTY_FILTERS, q: "   " })).toBe(false);
+    expect(hasActiveFilters({ ...EMPTY_FILTERS, q: "x" })).toBe(true);
+    expect(hasActiveFilters({ ...EMPTY_FILTERS, statuses: ["open"] })).toBe(true);
+    expect(hasActiveFilters({ ...EMPTY_FILTERS, severity: "low" })).toBe(true);
+    expect(hasActiveFilters({ ...EMPTY_FILTERS, area: "Login" })).toBe(true);
   });
 });

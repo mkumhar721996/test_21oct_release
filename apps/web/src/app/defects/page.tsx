@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { DefectTable } from "@/components/defects/defect-table";
-import { Pager } from "@/components/defects/pager";
+import { DefectListView } from "@/components/defects/defect-list-view";
 import { StatusCounts } from "@/components/defects/status-counts";
 import { Icon } from "@/components/icon";
-import { clampPage, countByStatus, pageOf, sortByReported, PAGE_SIZE, type SortDir } from "@/lib/defects";
+import { clampPage, countByStatus, sortByReported, PAGE_SIZE, type SortDir } from "@/lib/defects";
 import { getDefects } from "@/lib/defects-api";
 
 export default async function DefectsPage({
@@ -17,7 +16,7 @@ export default async function DefectsPage({
   const counts = countByStatus(all);
   const sorted = sortByReported(all, sort);
   const pageCount = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
-  const { rows, page, from, to, total } = pageOf(sorted, clampPage(params.page, pageCount));
+  const page = clampPage(params.page, pageCount);
 
   return (
     <div className="stack stack-lg" style={{ paddingBlock: "var(--space-2)" }}>
@@ -29,10 +28,7 @@ export default async function DefectsPage({
         </Link>
       </div>
       <StatusCounts counts={counts} />
-      <div className="stack stack-sm">
-        <DefectTable rows={rows} sort={sort} from={from} to={to} total={total} />
-        <Pager page={page} pageCount={pageCount} total={total} from={from} to={to} sort={sort} />
-      </div>
+      <DefectListView defects={sorted} sort={sort} page={page} />
     </div>
   );
 }

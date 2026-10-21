@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { Defect } from "@/lib/defects";
 import DefectsPage from "@/app/defects/page";
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn(), replace: vi.fn() }) }));
 
 const all: Defect[] = Array.from({ length: 45 }, (_, i) => ({
   id: `DEF-${i + 1}`,

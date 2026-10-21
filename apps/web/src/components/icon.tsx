@@ -7,9 +7,15 @@ const PATHS = {
   "chevron-left": ["m15 18-6-6 6-6"],
   "chevron-right": ["m9 18 6-6-6-6"],
   "chevron-down": ["m6 9 6 6 6-6"],
+  search: ["m21 21-4.3-4.3"],
+  x: ["M18 6 6 18", "m6 6 12 12"],
 } as const;
 
-const CIRCLED = new Set(["alert", "info"]);
+const CIRCLES: Partial<Record<IconName, { cx: number; cy: number; r: number }>> = {
+  alert: { cx: 12, cy: 12, r: 10 },
+  info: { cx: 12, cy: 12, r: 10 },
+  search: { cx: 11, cy: 11, r: 8 },
+};
 
 export type IconName = keyof typeof PATHS;
 
@@ -17,6 +23,7 @@ export function Icon({ name, style }: { name: IconName; style?: React.CSSPropert
   return (
     <svg
       aria-hidden="true"
+      className="icon"
       viewBox="0 0 24 24"
       width="1.25em"
       height="1.25em"
@@ -27,7 +34,7 @@ export function Icon({ name, style }: { name: IconName; style?: React.CSSPropert
       strokeLinejoin="round"
       style={{ flexShrink: 0, verticalAlign: "middle", ...style }}
     >
-      {CIRCLED.has(name) && <circle cx="12" cy="12" r="10" />}
+      {CIRCLES[name] && <circle {...CIRCLES[name]} />}
       {PATHS[name].map((d) => (
         <path key={d} d={d} />
       ))}
