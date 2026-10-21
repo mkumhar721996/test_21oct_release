@@ -10,7 +10,8 @@ export async function postCommentAction(id: string, body: string): Promise<PostC
   if (!text) return { ok: false };
   try {
     return { ok: true, comment: await postComment(id, text) };
-  } catch {
+  } catch (error) {
+    console.error(`Posting a comment on ${id} failed`, error);
     return { ok: false };
   }
 }

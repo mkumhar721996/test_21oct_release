@@ -23,8 +23,14 @@ export function CommentSection({ defectId, initialComments }: { defectId: string
     }
     setBlank(false);
     setPending(true);
-    const result = await postCommentAction(defectId, text);
-    setPending(false);
+    let result: Awaited<ReturnType<typeof postCommentAction>> = { ok: false };
+    try {
+      result = await postCommentAction(defectId, text);
+    } catch {
+      // transport failure: same inline failure as an API error
+    } finally {
+      setPending(false);
+    }
     if (result.ok) {
       setComments((prev) => [...prev, result.comment]);
       setText("");

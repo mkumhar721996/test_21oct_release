@@ -54,6 +54,18 @@ describe("CommentSection", () => {
     expect(screen.getAllByRole("listitem")).toHaveLength(1);
   });
 
+  it("treats a rejected server action call as a failure and re-enables the button", async () => {
+    vi.mocked(postCommentAction).mockRejectedValue(new Error("network"));
+    render(<CommentSection defectId="DEF-101" initialComments={[c1]} />);
+    submit("Needs a retry");
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent).toMatch(/try again/i);
+    expect(input().value).toBe("Needs a retry");
+    const button = screen.getByRole("button", { name: "Post comment" }) as HTMLButtonElement;
+    expect(button.disabled).toBe(false);
+    expect(screen.getAllByRole("listitem")).toHaveLength(1);
+  });
+
   it("removes the alert after a later successful post", async () => {
     vi.mocked(postCommentAction).mockResolvedValueOnce({ ok: false }).mockResolvedValueOnce({ ok: true, comment: c2 });
     render(<CommentSection defectId="DEF-101" initialComments={[c1]} />);
