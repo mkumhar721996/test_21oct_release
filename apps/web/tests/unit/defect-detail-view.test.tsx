@@ -1,8 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { DefectDetailView } from "@/components/defects/defect-detail-view";
+import { postComment } from "@/app/defects/[id]/actions";
 import type { DefectDetail } from "@/lib/defects";
 
+vi.mock("@/app/defects/[id]/actions", () => ({ postComment: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 
 const full: DefectDetail = {
@@ -64,9 +66,21 @@ describe("DefectDetailView", () => {
     expect(screen.getByRole("link", { name: /back to list/i }).getAttribute("href")).toBe("/defects");
   });
 
-  it("has no assign, status or comment controls", () => {
+  it("has no assign or change-status controls, and one comment input", () => {
     render(<DefectDetailView defect={full} />);
-    expect(screen.queryByRole("button", { name: /assign|change status|post comment/i })).toBeNull();
-    expect(screen.queryByRole("textbox")).toBeNull();
+    expect(screen.queryByRole("button", { name: /assign|change status/i })).toBeNull();
+    expect(screen.getAllByRole("textbox")).toHaveLength(1);
+    expect(screen.queryByRole("button", { name: /edit|delete|remove/i })).toBeNull();
+  });
+
+  it("leaves status, severity, assignee and area unchanged after a failed post (AC 5)", async () => {
+    vi.mocked(postComment).mockResolvedValue({ ok: false });
+    render(<DefectDetailView defect={full} />);
+    const texts = ["Open", "High", "Assignee: Dana Lee", "Area: Login"];
+    const before = texts.map((t) => screen.getByText(t).textContent);
+    fireEvent.change(screen.getByLabelText("Add a comment"), { target: { value: "Draft" } });
+    fireEvent.click(screen.getByRole("button", { name: "Post comment" }));
+    await screen.findByRole("alert");
+    expect(texts.map((t) => screen.getByText(t).textContent)).toEqual(before);
   });
 });

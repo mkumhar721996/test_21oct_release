@@ -27,13 +27,51 @@ function build(n) {
 
 let data = build(45);
 let failMode = "off";
+let commentsFailing = false;
+let posted = {};
+let writes = [];
 
 createServer((req, res) => {
   const seed = /^\/__seed\/(\d+)$/.exec(req.url ?? "");
   if (req.method === "POST" && seed) {
     data = build(Number(seed[1]));
     failMode = "off";
+    commentsFailing = false;
+    posted = {};
+    writes = [];
     res.writeHead(204).end();
+    return;
+  }
+  const failComments = /^\/__fail\/comments\/(on|off)$/.exec(req.url ?? "");
+  if (req.method === "POST" && failComments) {
+    commentsFailing = failComments[1] === "on";
+    res.writeHead(204).end();
+    return;
+  }
+  if (req.method === "GET" && req.url === "/__writes") {
+    res.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify(writes));
+    return;
+  }
+  if (req.method !== "GET" && !/^\/__fail\//.test(req.url ?? "")) writes.push({ method: req.method, url: req.url });
+  const post = /^\/defects\/([^/?]+)\/comments$/.exec(req.url ?? "");
+  if (req.method === "POST" && post) {
+    const id = decodeURIComponent(post[1]);
+    let raw = "";
+    req.on("data", (c) => (raw += c));
+    req.on("end", () => {
+      if (commentsFailing) {
+        res.writeHead(500).end();
+        return;
+      }
+      if (!data.some((d) => d.id === id)) {
+        res.writeHead(404).end();
+        return;
+      }
+      const list = (posted[id] ??= []);
+      const comment = { id: `p${list.length + 1}`, author: "You", body: JSON.parse(raw).body, createdAt: new Date().toISOString() };
+      list.push(comment);
+      res.writeHead(201, { "content-type": "application/json" }).end(JSON.stringify(comment));
+    });
     return;
   }
   const fail = /^\/__fail\/(on|off|malformed)$/.exec(req.url ?? "");
@@ -76,7 +114,10 @@ createServer((req, res) => {
         description: `Description of ${base.title}`,
         assignee: bare ? null : "Dana Lee",
         attachments: bare ? [] : [{ name: "screenshot.png", url: "http://localhost/files/screenshot.png" }],
-        comments: bare ? [] : [{ id: "c1", author: "Sam", body: "Reproduced on 17.1", createdAt: "2026-10-02T10:00:00Z" }],
+        comments: [
+          ...(bare ? [] : [{ id: "c1", author: "Sam", body: "Reproduced on 17.1", createdAt: "2026-10-02T10:00:00Z" }]),
+          ...(posted[id] ?? []),
+        ],
       }),
     );
     return;
