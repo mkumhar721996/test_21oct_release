@@ -38,5 +38,32 @@ createServer((req, res) => {
     res.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify(data));
     return;
   }
+  const one = /^\/defects\/([^/?]+)$/.exec(req.url ?? "");
+  if (req.method === "GET" && one) {
+    const id = decodeURIComponent(one[1]);
+    if (id === "DEF-BOOM") {
+      res.writeHead(500).end();
+      return;
+    }
+    const base =
+      id === "DEF-NOATT"
+        ? { id, title: "No extras", status: "open", severity: "low", area: "Login", reportedAt: "2026-10-01" }
+        : data.find((d) => d.id === id);
+    if (!base) {
+      res.writeHead(404).end();
+      return;
+    }
+    const bare = id === "DEF-NOATT";
+    res.writeHead(200, { "content-type": "application/json" }).end(
+      JSON.stringify({
+        ...base,
+        description: `Description of ${base.title}`,
+        assignee: bare ? null : "Dana Lee",
+        attachments: bare ? [] : [{ name: "screenshot.png", url: "http://localhost/files/screenshot.png" }],
+        comments: bare ? [] : [{ id: "c1", author: "Sam", body: "Reproduced on 17.1", createdAt: "2026-10-02T10:00:00Z" }],
+      }),
+    );
+    return;
+  }
   res.writeHead(404).end();
 }).listen(Number(process.env.STUB_API_PORT ?? 3101));
