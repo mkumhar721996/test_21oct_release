@@ -5,10 +5,13 @@ import {
   Headers,
   Post,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
+import { ServiceAuthGuard } from './service-auth.guard';
 import { DefectsService, type Defect, type NewDefect } from './defects.service';
 
 @Controller('defects')
+@UseGuards(ServiceAuthGuard)
 export class DefectsController {
   constructor(private readonly defects: DefectsService) {}
 

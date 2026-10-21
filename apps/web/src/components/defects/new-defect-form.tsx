@@ -66,6 +66,11 @@ export function NewDefectForm({ initial = EMPTY }: { initial?: NewDefectState })
 
   return (
     <form action={formAction} className="stack" noValidate>
+      {state.errors.form && (
+        <div className="alert alert-danger" role="alert">
+          {state.errors.form}
+        </div>
+      )}
       <div className="field">
         <label htmlFor="defect-title">Title</label>
         <input

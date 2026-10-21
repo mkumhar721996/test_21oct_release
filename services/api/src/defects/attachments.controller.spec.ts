@@ -17,6 +17,18 @@ describe('AttachmentsController', () => {
     expect(store.put).toHaveBeenCalledWith(`attachments/${res.attachmentId}`, expect.any(Buffer), 'image/png');
   });
 
+  it('stores text files as text/plain whatever the client declared', async () => {
+    const store = { put: vi.fn().mockResolvedValue(undefined) };
+    await new AttachmentsController(store).upload(file('notes.txt', 'text/html'));
+    expect(store.put).toHaveBeenCalledWith(expect.any(String), expect.any(Buffer), 'text/plain');
+  });
+
+  it('rejects an image whose declared type does not match its extension', async () => {
+    await expect(
+      new AttachmentsController({ put: vi.fn() }).upload(file('a.png', 'text/html')),
+    ).rejects.toMatchObject({ status: 415 });
+  });
+
   it('rejects an unsupported type with 415', async () => {
     const store = { put: vi.fn() };
     await expect(

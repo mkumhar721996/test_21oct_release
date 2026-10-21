@@ -11,6 +11,7 @@ export async function POST(request: Request) {
   try {
     return Response.json(await uploadAttachment(file, reporterId));
   } catch (err) {
+    console.error("Attachment upload failed", err);
     if (err instanceof ApiError) return Response.json({ message: err.message }, { status: err.status });
     return Response.json(
       { message: "We could not upload that file. Try again or submit without it." },

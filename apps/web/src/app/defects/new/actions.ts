@@ -6,7 +6,7 @@ import { createDefect } from "@/lib/defects-api";
 import { getCurrentUserId } from "@/lib/session";
 
 export type NewDefectState = {
-  errors: { title?: string };
+  errors: { title?: string; form?: string };
   values: { title: string; severity: string; area: string; steps: string; attachmentId?: string };
 };
 
@@ -29,11 +29,17 @@ export async function createDefectAction(_prev: NewDefectState, formData: FormDa
   if (errors.title) return { errors, values };
 
   const reporterId = await getCurrentUserId();
-  if (!reporterId) throw new Error("Sign in to report a defect.");
+  if (!reporterId) return { errors: { form: "Sign in to report a defect." }, values };
 
-  const { id } = await createDefect(
-    { ...values, title: values.title.trim(), severity: values.severity as DefectSeverity },
-    reporterId,
-  );
+  let id: string;
+  try {
+    ({ id } = await createDefect(
+      { ...values, title: values.title.trim(), severity: values.severity as DefectSeverity },
+      reporterId,
+    ));
+  } catch (err) {
+    console.error("Creating the defect failed", err);
+    return { errors: { form: "We could not submit the defect. Try again in a moment." }, values };
+  }
   redirect(`/defects/${id}`);
 }

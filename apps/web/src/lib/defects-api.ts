@@ -15,6 +15,11 @@ function apiBase() {
   return process.env.API_BASE_URL || "http://localhost:3001";
 }
 
+// The service token proves this server is the one vouching for `x-user-id`; it never reaches the browser.
+function reporterHeaders(reporterId: string): Record<string, string> {
+  return { "x-user-id": reporterId, "x-service-token": process.env.API_SERVICE_TOKEN ?? "" };
+}
+
 export async function getDefects(): Promise<Defect[]> {
   const res = await fetch(`${apiBase()}/defects`, { cache: "no-store" });
   if (!res.ok) throw new Error(`GET /defects failed with status ${res.status}`);
@@ -34,7 +39,7 @@ async function messageOf(res: Response, fallback: string): Promise<string> {
 export async function createDefect(input: NewDefectInput, reporterId: string): Promise<{ id: string }> {
   const res = await fetch(`${apiBase()}/defects`, {
     method: "POST",
-    headers: { "content-type": "application/json", "x-user-id": reporterId },
+    headers: { "content-type": "application/json", ...reporterHeaders(reporterId) },
     body: JSON.stringify(input),
     cache: "no-store",
   });
@@ -50,7 +55,7 @@ export async function uploadAttachment(
   body.append("file", file, file.name);
   const res = await fetch(`${apiBase()}/defects/attachments`, {
     method: "POST",
-    headers: { "x-user-id": reporterId },
+    headers: reporterHeaders(reporterId),
     body,
     cache: "no-store",
   });

@@ -46,6 +46,15 @@ describe("createDefectAction", () => {
     expect(next.values).toMatchObject({ severity: "high", area: "Login", steps: "Open" });
   });
 
+  it("keeps the entries and reports a form error when the API fails", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    createDefect.mockRejectedValueOnce(new Error("boom"));
+    const next = await createDefectAction(empty, form({ title: "Crash", severity: "high", steps: "Open" }));
+    expect(redirect).not.toHaveBeenCalled();
+    expect(next.errors.form).toMatch(/Try again/);
+    expect(next.values).toMatchObject({ title: "Crash", severity: "high", steps: "Open" });
+  });
+
   it("sends no attachment when none was uploaded (AC 10)", async () => {
     await expect(
       createDefectAction(empty, form({ title: "Crash", attachmentId: "" })),

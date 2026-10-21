@@ -1,3 +1,4 @@
+import { createHmac } from "node:crypto";
 import type { APIRequestContext, BrowserContext } from "@playwright/test";
 
 /** Swaps the stub Platform API fixture to `count` generated defects (newest = DEF-101, 20 Oct 2026). */
@@ -6,9 +7,15 @@ export async function seedDefects(request: APIRequest, count: number) {
   if (!res.ok()) throw new Error(`seeding ${count} defects failed: ${res.status()}`);
 }
 
-/** Signs in as `userId` by setting the session cookie the web app reads. */
+/** Test-only secret; playwright.config.ts hands the same value to the web server. */
+export const TEST_SESSION_SECRET = "fake-session-secret";
+
+/** Signs in as `userId` by setting a correctly signed session cookie, as sign-in would. */
 export async function signInAs(context: BrowserContext, userId: string) {
-  await context.addCookies([{ name: "user-id", value: userId, url: "http://localhost:3000" }]);
+  const mac = createHmac("sha256", TEST_SESSION_SECRET).update(userId).digest("base64url");
+  await context.addCookies([
+    { name: "user-id", value: `${userId}.${mac}`, url: "http://localhost:3000", httpOnly: true, sameSite: "Lax" },
+  ]);
 }
 
 /** The last defect the stub API received (id, reporter header, body), or null. */

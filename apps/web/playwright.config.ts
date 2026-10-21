@@ -17,7 +17,11 @@ export default defineConfig({
     },
     {
       command: `pnpm build && pnpm start --port ${port}`,
-      env: { API_BASE_URL: `http://localhost:${apiPort}` },
+      env: {
+        API_BASE_URL: `http://localhost:${apiPort}`,
+        SESSION_SECRET: "fake-session-secret",
+        API_SERVICE_TOKEN: "fake-service-token",
+      },
       url: `http://localhost:${port}`,
       reuseExistingServer: !process.env.CI,
       timeout: 300_000,

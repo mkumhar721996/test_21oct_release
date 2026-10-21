@@ -32,11 +32,13 @@ describe("getDefects", () => {
 describe("createDefect / uploadAttachment", () => {
   it("POSTs the defect with the reporter header", async () => {
     vi.stubEnv("API_BASE_URL", "http://api.test");
+    vi.stubEnv("API_SERVICE_TOKEN", "fake-service-token");
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ id: "d1" }) });
     vi.stubGlobal("fetch", fetchMock);
     await expect(createDefect({ title: "T", severity: "low", area: "", steps: "" }, "user-42")).resolves.toEqual({ id: "d1" });
     expect(fetchMock.mock.calls[0][0]).toBe("http://api.test/defects");
     expect(fetchMock.mock.calls[0][1].headers["x-user-id"]).toBe("user-42");
+    expect(fetchMock.mock.calls[0][1].headers["x-service-token"]).toBe("fake-service-token");
   });
 
   it("surfaces the API message when an upload is rejected", async () => {
