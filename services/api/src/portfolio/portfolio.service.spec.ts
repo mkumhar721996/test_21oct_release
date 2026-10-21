@@ -1,12 +1,17 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { PriceFeedService } from './price-feed.service';
 import { HoldingView, PortfolioService } from './portfolio.service';
 import { STOCKS } from './stock-catalogue';
 
 describe('PortfolioService', () => {
-  const feed = new PriceFeedService(() => 1);
-  const service = new PortfolioService(feed);
+  let feed: PriceFeedService;
+  let service: PortfolioService;
   const sum = (f: (h: HoldingView) => number) => service.listHoldings().reduce((a, h) => a + f(h), 0);
+
+  beforeEach(() => {
+    feed = new PriceFeedService(() => 1);
+    service = new PortfolioService(feed);
+  });
 
   it('lists the catalogue', () => {
     expect(service.listStocks()).toEqual(STOCKS);
@@ -28,7 +33,7 @@ describe('PortfolioService', () => {
   });
 
   describe('after a price move', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       feed.tick();
       feed.tick();
     });

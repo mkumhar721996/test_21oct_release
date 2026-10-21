@@ -4,6 +4,7 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AppModule } from '../src/app.module';
+import { PriceFeedService } from '../src/portfolio/price-feed.service';
 import { CATALOGUE } from '../src/portfolio/stock-catalogue';
 
 describe('portfolio endpoints', () => {
@@ -16,6 +17,8 @@ describe('portfolio endpoints', () => {
     }).compile();
     app = moduleRef.createNestApplication();
     await app.init();
+    // stop the 30 s timer so a tick cannot land between two requests in a test
+    app.get(PriceFeedService).onModuleDestroy();
     server = app.getHttpServer();
   });
 
@@ -70,7 +73,9 @@ describe('portfolio endpoints', () => {
     const body = (await request(server).get('/portfolio/history').expect(200)).body;
     expect(body.period).toBe('1D');
     expect(body.points.at(-1).value).toBe(total);
-    await request(server).get('/portfolio/history?period=ALL').expect(200);
+    const all = (await request(server).get('/portfolio/history?period=ALL').expect(200)).body;
+    expect(all.intervalMs).toBe(7 * 86_400_000);
+    expect(all.points).toHaveLength(104 + 1);
     await request(server).get('/portfolio/history?period=2Y').expect(400);
   });
 });
