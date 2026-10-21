@@ -1,0 +1,66 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+:root {
+  --color-fg: #111827; /** Primary text */
+  --color-bg: #ffffff; /** Page background */
+  --color-primary: #2563eb; /** Brand and primary action */
+  --color-primary-fg: #ffffff; /** Text on primary and danger fills */
+  --color-border: #d1d5db; /** Default borders */
+  --color-muted: #4b5563; /** Secondary text */
+  --color-surface: #f3f4f6; /** Subtle surface fill */
+  --color-danger: #b91c1c; /** Danger and error */
+  --color-danger-bg: #fee2e2; /** Danger tint */
+  --color-success: #15803d; /** Success */
+  --color-success-bg: #dcfce7; /** Success tint */
+  --color-warning: #92400e; /** Warning */
+  --color-warning-bg: #fef3c7; /** Warning tint */
+  --color-info: #1d4ed8; /** Info */
+  --color-info-bg: #dbeafe; /** Info tint */
+  --space-1: 4px; /** Spacing step 1 */
+  --space-2: 8px; /** Spacing step 2 */
+  --space-3: 16px; /** Spacing step 3 */
+  --space-4: 24px; /** Spacing step 4 */
+  --space-5: 32px; /** Spacing step 5 */
+  --radius-sm: 4px; /** Small radius */
+  --radius-md: 8px; /** Medium radius */
+  --radius-lg: 12px; /** Large radius */
+  --radius-full: 9999px; /** Pill and circle */
+  --font-size-sm: 14px; /** Small text */
+  --font-size-md: 16px; /** Body text */
+  --font-size-lg: 20px; /** Large text and headings */
+  --font-size-xl: 30px; /** Page title */
+  --size-control-sm: 32px; /** Small control height */
+  --size-control-md: 40px; /** Default control height */
+  --size-control-lg: 48px; /** Large control height */
+  --size-icon: 16px; /** Checkbox, radio and icon size */
+  --size-switch-width: 40px; /** Switch track width */
+  --size-spinner: 24px; /** Spinner size */
+  --size-drawer: 360px; /** Drawer width */
+  --size-modal: 480px; /** Modal max width */
+  --size-container: 960px; /** Page container max width */
+  --size-popup: 200px; /** Dropdown and nav panel min width */
+  --border-width: 1px; /** Border width */
+  --focus-ring-width: 2px; /** Focus ring width */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; /** Sans-serif stack */
+  --font-weight-regular: 400; /** Regular */
+  --font-weight-medium: 500; /** Medium */
+  --font-weight-bold: 700; /** Bold */
+  --line-height-body: 1.5; /** Body line height */
+  --opacity-disabled: 0.5; /** Disabled opacity */
+  --opacity-backdrop: 0.5; /** Backdrop opacity */
+  --z-popup: 50; /** Popup stacking */
+  --z-overlay: 100; /** Overlay stacking */
+  --button-primary-background: var(--color-primary); /** Primary button fill */
+  --button-primary-color: var(--color-primary-fg); /** Primary button text */
+  --button-secondary-background: var(--color-surface); /** Secondary button fill */
+  --button-secondary-color: var(--color-fg); /** Secondary button text */
+  --button-danger-background: var(--color-danger); /** Danger button fill */
+  --button-danger-color: var(--color-primary-fg); /** Danger button text */
+  --button-default-radius: var(--radius-md); /** Button radius */
+  --card-default-background: var(--color-bg); /** Card fill */
+  --card-default-border: var(--color-border); /** Card border */
+  --card-default-radius: var(--radius-lg); /** Card radius */
+  --card-default-padding: var(--space-3); /** Card padding */
+}
