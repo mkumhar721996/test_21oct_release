@@ -1,9 +1,12 @@
-import { greeting } from "@/lib/greeting";
+import { Suspense } from "react";
+import { DashboardContent } from "@/components/dashboard/dashboard-content";
+import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton";
 
+// Suspense lives here (not in a root loading.tsx) so /reports keeps its own loading behaviour.
 export default function Home() {
   return (
-    <div className="flex items-center justify-center" style={{ minHeight: "50vh" }}>
-      <h1 className="text-3xl font-bold">{greeting()}</h1>
-    </div>
+    <Suspense fallback={<DashboardSkeleton />}>
+      <DashboardContent />
+    </Suspense>
   );
 }

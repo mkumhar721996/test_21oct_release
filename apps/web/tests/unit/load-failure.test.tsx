@@ -46,3 +46,25 @@ describe("LoadFailure", () => {
     });
   });
 });
+
+describe("LoadFailure copy overrides", () => {
+  it("uses the given title, detail and loading label", async () => {
+    render(<LoadFailure title="We couldn't load your dashboard." detail="Check your connection." loadingLabel="Loading dashboard" />);
+    const alert = screen.getByRole("alert");
+    expect(alert.textContent).toContain("We couldn't load your dashboard.");
+    expect(alert.textContent).toContain("Check your connection.");
+    expect(alert.textContent).not.toContain("defect");
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Try again" }));
+    });
+    expect(await screen.findByText(/It still didn't load/)).toBeTruthy();
+  });
+
+  it("uses retriedDetail after a failed retry", async () => {
+    render(<LoadFailure detail="First." retriedDetail="Again." />);
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Try again" }));
+    });
+    expect(await screen.findByText("Again.")).toBeTruthy();
+  });
+});

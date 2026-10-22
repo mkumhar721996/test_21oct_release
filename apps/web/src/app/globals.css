@@ -328,6 +328,34 @@ a { color: var(--color-primary); }
 .results-line { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); flex-wrap: wrap; min-height: var(--size-control-sm); }
 @media (max-width: 40em) { .count-grid { gap: var(--space-2); } .count-num { font-size: var(--font-size-lg); } .select-group .field { flex: 1 1 8rem; } }
 
+/* Dashboard */
+.summary { display: grid; gap: var(--space-3); grid-template-columns: 1fr; }
+.stat-tile { display: flex; flex-direction: column; gap: var(--space-1); }
+.stat-label { font-size: var(--font-size-sm); color: var(--color-muted); }
+.stat-value { font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); }
+.stat-tile.is-primary .stat-value { font-size: var(--font-size-xl); }
+.stat-sub { font-size: var(--font-size-sm); }
+.up { color: var(--color-success); }
+.down { color: var(--color-danger); }
+.lower { display: grid; gap: var(--space-3); grid-template-columns: 1fr; align-items: start; }
+.plain-list { list-style: none; margin: 0; padding: 0; }
+.plain-list li { display: flex; justify-content: space-between; gap: var(--space-2); padding: var(--space-2) 0; border-top: var(--border-width) solid var(--color-border); }
+.plain-list li:first-child { border-top: 0; }
+.li-main { min-width: 0; overflow-wrap: anywhere; }
+.li-amount { font-weight: var(--font-weight-medium); white-space: nowrap; }
+.holdings-scroll { overflow-x: auto; }
+.holdings { width: 100%; border-collapse: collapse; font-size: var(--font-size-sm); }
+.holdings th, .holdings td { padding: var(--space-2); text-align: right; border-top: var(--border-width) solid var(--color-border); white-space: nowrap; }
+.holdings th:first-child, .holdings td:first-child { text-align: left; white-space: normal; padding-left: 0; }
+.holdings th:last-child, .holdings td:last-child { padding-right: 0; }
+.holdings thead th { border-top: 0; color: var(--color-muted); font-weight: var(--font-weight-medium); }
+.sk-line { height: var(--space-3); margin-block: var(--space-2); }
+.sk-big { height: var(--space-5); width: 60%; }
+@media (min-width: 48em) {
+  .summary { grid-template-columns: 2fr 1fr 1fr; }
+  .lower { grid-template-columns: 1fr 1.6fr; }
+}
+
 /* App shell */
 .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
 .shell-header { border-bottom: var(--border-width) solid var(--color-border); background: var(--color-bg); }

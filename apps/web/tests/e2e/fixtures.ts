@@ -12,4 +12,10 @@ export async function setApiFailing(request: APIRequest, mode: "on" | "off" | "m
   if (!res.ok()) throw new Error(`setting api failure mode ${mode} failed: ${res.status()}`);
 }
 
+/** Selects the stub API's portfolio data: "default" (3 holdings, 2 SIPs, ₹1,00,000) or "failing" (500 on all four endpoints). */
+export async function seedPortfolio(request: APIRequest, scenario: "default" | "failing") {
+  const res = await request.post(`http://localhost:3101/__portfolio/${scenario}`);
+  if (!res.ok()) throw new Error(`seeding portfolio scenario ${scenario} failed: ${res.status()}`);
+}
+
 type APIRequest = APIRequestContext;

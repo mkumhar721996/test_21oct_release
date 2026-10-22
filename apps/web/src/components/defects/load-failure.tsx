@@ -9,7 +9,19 @@ const FIRST_DETAIL =
 const AGAIN_DETAIL =
   "It still didn't load. Wait a moment and try again, or start a new defect report from the top bar.";
 
-export function LoadFailure() {
+interface LoadFailureProps {
+  title?: string;
+  detail?: string;
+  retriedDetail?: string;
+  loadingLabel?: string;
+}
+
+export function LoadFailure({
+  title = "We couldn't load the defect list.",
+  detail = FIRST_DETAIL,
+  retriedDetail = AGAIN_DETAIL,
+  loadingLabel = "Loading defects",
+}: LoadFailureProps = {}) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [retried, setRetried] = useState(false);
@@ -38,7 +50,7 @@ export function LoadFailure() {
     <>
       {pending && (
         <div aria-busy="true">
-          <div className="stack stack-sm" role="status" aria-label="Loading defects">
+          <div className="stack stack-sm" role="status" aria-label={loadingLabel}>
             {[0, 1, 2, 3].map((i) => (
               <span key={i} className="skeleton" style={{ height: "var(--size-icon)" }} />
             ))}
@@ -49,8 +61,8 @@ export function LoadFailure() {
         <div className="fail-body">
           <Icon name="alert" />
           <div className="text">
-            <strong>We couldn&apos;t load the defect list.</strong>
-            <span>{retried ? AGAIN_DETAIL : FIRST_DETAIL}</span>
+            <strong>{title}</strong>
+            <span>{retried ? retriedDetail : detail}</span>
           </div>
           <button ref={button} className="btn btn-secondary" type="button" disabled={pending} onClick={retry}>
             {pending ? "Trying again…" : "Try again"}
