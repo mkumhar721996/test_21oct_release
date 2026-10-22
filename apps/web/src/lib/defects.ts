@@ -28,6 +28,7 @@ export interface DefectComment {
 export interface DefectDetail extends Defect {
   description: string;
   assignee: string | null;
+  version: number;
   attachments: DefectAttachment[];
   comments: DefectComment[];
 }
@@ -107,4 +108,28 @@ export function filterDefects(all: Defect[], f: DefectFilters): Defect[] {
       (f.severity === "" || d.severity === f.severity) &&
       (f.area === "" || d.area === f.area),
   );
+}
+
+export type Role = "tester" | "manager" | "lead" | "developer" | "reporter";
+export const ASSIGN_ROLES: readonly Role[] = ["tester", "manager", "lead"];
+
+export interface Person {
+  id: string;
+  name: string;
+  roles: Role[];
+}
+
+export interface Viewer {
+  name: string;
+  roles: Role[];
+}
+
+export const STATUS_OPTIONS: { value: DefectStatus; label: string }[] = [
+  { value: "open", label: "Open" },
+  { value: "in_progress", label: "In progress" },
+  { value: "closed", label: "Closed" },
+];
+
+export function canManageDefect(viewer: Viewer | null): boolean {
+  return !!viewer && viewer.roles.some((role) => ASSIGN_ROLES.includes(role));
 }

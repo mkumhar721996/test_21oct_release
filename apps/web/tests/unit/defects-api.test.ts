@@ -1,5 +1,43 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getDefect, getDefects } from "@/lib/defects-api";
+import { getAssignablePeople, getDefect, getDefects, getViewer } from "@/lib/defects-api";
+
+describe("getViewer", () => {
+  it("forwards the cookie and returns the viewer", async () => {
+    vi.stubEnv("API_BASE_URL", "http://api.test");
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, status: 200, json: async () => ({ name: "Tess", roles: ["tester"] }) });
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(getViewer("sid=1")).resolves.toEqual({ name: "Tess", roles: ["tester"] });
+    expect(fetchMock.mock.calls[0][0]).toBe("http://api.test/session");
+    expect(fetchMock.mock.calls[0][1].headers).toEqual({ cookie: "sid=1" });
+  });
+  it("returns null on 401 and on network failure", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 401 }));
+    await expect(getViewer()).resolves.toBeNull();
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("down")));
+    await expect(getViewer()).resolves.toBeNull();
+  });
+});
+
+describe("getAssignablePeople", () => {
+  it("queries only tester, manager and lead", async () => {
+    vi.stubEnv("API_BASE_URL", "http://api.test");
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, json: async () => [{ id: "p1", name: "Sam", roles: ["tester"] }] });
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(getAssignablePeople("sid=1")).resolves.toHaveLength(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining("/people?roles=tester,manager,lead"),
+      expect.anything(),
+    );
+  });
+  it("returns an empty list when the request fails", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 }));
+    await expect(getAssignablePeople()).resolves.toEqual([]);
+  });
+});
 
 afterEach(() => {
   vi.unstubAllGlobals();
