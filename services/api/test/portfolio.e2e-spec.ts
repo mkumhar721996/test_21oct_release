@@ -4,6 +4,8 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AppModule } from '../src/app.module';
+import { PriceFeedService } from '../src/portfolio/price-feed.service';
+import { CATALOGUE } from '../src/portfolio/stock-catalogue';
 
 describe('portfolio endpoints', () => {
   let app: INestApplication;
@@ -15,6 +17,8 @@ describe('portfolio endpoints', () => {
     }).compile();
     app = moduleRef.createNestApplication();
     await app.init();
+    // stop the 30 s timer so a tick cannot land between two requests in a test
+    app.get(PriceFeedService).onModuleDestroy();
     server = app.getHttpServer();
   });
 
@@ -47,5 +51,31 @@ describe('portfolio endpoints', () => {
     expect(body.invested).toBe(sum('investedAmount'));
     expect(body.currentValue).toBe(sum('currentValue'));
     expect(body.returns).toBe(body.currentValue - body.invested);
+  });
+
+  it('shows a price and 1D change for every stock', async () => {
+    const stocks = (await request(server).get('/stocks').expect(200)).body;
+    expect(stocks).toHaveLength(CATALOGUE.length);
+    for (const s of stocks) {
+      expect(s.price).toBeGreaterThan(0);
+      expect(typeof s.dayChangePercent).toBe('number');
+      expect(s.dayChange).toBe(s.price - s.previousClose);
+    }
+  });
+
+  it('offers the chart periods', async () => {
+    const body = (await request(server).get('/portfolio/periods').expect(200)).body;
+    expect(body).toEqual(['1D', '1W', '1M', '3M', '1Y', 'ALL']);
+  });
+
+  it('serves history ending at the portfolio total, defaulting to 1D', async () => {
+    const total = (await request(server).get('/portfolio').expect(200)).body.currentValue;
+    const body = (await request(server).get('/portfolio/history').expect(200)).body;
+    expect(body.period).toBe('1D');
+    expect(body.points.at(-1).value).toBe(total);
+    const all = (await request(server).get('/portfolio/history?period=ALL').expect(200)).body;
+    expect(all.intervalMs).toBe(7 * 86_400_000);
+    expect(all.points).toHaveLength(104 + 1);
+    await request(server).get('/portfolio/history?period=2Y').expect(400);
   });
 });
