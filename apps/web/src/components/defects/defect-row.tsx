@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Icon, type IconName } from "@/components/icon";
-import type { Defect, DefectSeverity, DefectStatus } from "@/lib/defects";
+import { STATUS_LABEL, type Defect, type DefectSeverity, type DefectStatus } from "@/lib/defects";
 
 export const STATUS_BADGE: Record<DefectStatus, { label: string; badge: string; icon: IconName }> = {
-  open: { label: "Open", badge: "badge-danger", icon: "alert" },
-  in_progress: { label: "In progress", badge: "badge-warning", icon: "loader" },
-  closed: { label: "Closed", badge: "badge-success", icon: "check" },
+  open: { label: STATUS_LABEL.open, badge: "badge-danger", icon: "alert" },
+  in_progress: { label: STATUS_LABEL.in_progress, badge: "badge-warning", icon: "loader" },
+  closed: { label: STATUS_LABEL.closed, badge: "badge-success", icon: "check" },
 };
 
 export const SEVERITY_BADGE: Record<DefectSeverity, { label: string; badge: string }> = {

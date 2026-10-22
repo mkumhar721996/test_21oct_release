@@ -1,3 +1,4 @@
+import { apiBase } from "@/lib/defects-api";
 import { STATUS_OPTIONS, type DefectDetail } from "@/lib/defects";
 
 type Kind = "conflict" | "forbidden" | "unauthenticated" | "failed";
@@ -24,7 +25,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (input.assignee !== undefined) change.assignee = input.assignee;
   if (input.status !== undefined) change.status = input.status;
 
-  const base = process.env.API_BASE_URL || "http://localhost:3001";
+  const base = apiBase();
   const cookie = req.headers.get("cookie");
   let res: Response;
   try {
@@ -37,7 +38,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   } catch {
     return outcome("failed", 502);
   }
-  if (res.ok) return Response.json(await res.json());
+  if (res.ok) {
+    try {
+      return Response.json(await res.json());
+    } catch {
+      return outcome("failed", 502);
+    }
+  }
   if (res.status === 401) return outcome("unauthenticated", 401);
   if (res.status === 403) return outcome("forbidden", 403);
   if (res.status === 409) {

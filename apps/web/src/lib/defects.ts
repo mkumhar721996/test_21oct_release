@@ -124,11 +124,15 @@ export interface Viewer {
   roles: Role[];
 }
 
-export const STATUS_OPTIONS: { value: DefectStatus; label: string }[] = [
-  { value: "open", label: "Open" },
-  { value: "in_progress", label: "In progress" },
-  { value: "closed", label: "Closed" },
-];
+export const STATUS_LABEL: Record<DefectStatus, string> = {
+  open: "Open",
+  in_progress: "In progress",
+  closed: "Closed",
+};
+
+export const STATUS_OPTIONS: { value: DefectStatus; label: string }[] = (
+  Object.keys(STATUS_LABEL) as DefectStatus[]
+).map((value) => ({ value, label: STATUS_LABEL[value] }));
 
 export function canManageDefect(viewer: Viewer | null): boolean {
   return !!viewer && viewer.roles.some((role) => ASSIGN_ROLES.includes(role));

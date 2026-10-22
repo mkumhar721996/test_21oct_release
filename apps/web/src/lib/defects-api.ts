@@ -1,7 +1,9 @@
 import { ASSIGN_ROLES, type Defect, type DefectDetail, type Person, type Viewer } from "@/lib/defects";
 
+export const apiBase = () => process.env.API_BASE_URL || "http://localhost:3001";
+
 export async function getViewer(cookie?: string): Promise<Viewer | null> {
-  const base = process.env.API_BASE_URL || "http://localhost:3001";
+  const base = apiBase();
   try {
     const res = await fetch(`${base}/session`, { cache: "no-store", headers: cookie ? { cookie } : {} });
     if (!res.ok) return null;
@@ -12,7 +14,7 @@ export async function getViewer(cookie?: string): Promise<Viewer | null> {
 }
 
 export async function getAssignablePeople(cookie?: string): Promise<Person[]> {
-  const base = process.env.API_BASE_URL || "http://localhost:3001";
+  const base = apiBase();
   try {
     const res = await fetch(`${base}/people?roles=${ASSIGN_ROLES.join(",")}`, {
       cache: "no-store",
@@ -27,7 +29,7 @@ export async function getAssignablePeople(cookie?: string): Promise<Person[]> {
 }
 
 export async function getDefects(): Promise<Defect[]> {
-  const base = process.env.API_BASE_URL || "http://localhost:3001";
+  const base = apiBase();
   const res = await fetch(`${base}/defects`, { cache: "no-store" });
   if (!res.ok) throw new Error(`GET /defects failed with status ${res.status}`);
   const body: unknown = await res.json();
@@ -36,7 +38,7 @@ export async function getDefects(): Promise<Defect[]> {
 }
 
 export async function getDefect(id: string): Promise<DefectDetail | null> {
-  const base = process.env.API_BASE_URL || "http://localhost:3001";
+  const base = apiBase();
   const path = `/defects/${encodeURIComponent(id)}`;
   let res: Response;
   try {
