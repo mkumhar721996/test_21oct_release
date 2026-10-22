@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  ASSIGN_ROLES,
+  STATUS_OPTIONS,
+  canManageDefect,
   AREAS,
   EMPTY_FILTERS,
   SEVERITIES,
@@ -148,5 +151,19 @@ describe("filterDefects", () => {
     expect(hasActiveFilters({ ...EMPTY_FILTERS, statuses: ["open"] })).toBe(true);
     expect(hasActiveFilters({ ...EMPTY_FILTERS, severity: "low" })).toBe(true);
     expect(hasActiveFilters({ ...EMPTY_FILTERS, area: "Login" })).toBe(true);
+  });
+});
+
+describe("canManageDefect", () => {
+  it("allows any one of tester, manager or lead", () => {
+    for (const role of ASSIGN_ROLES) expect(canManageDefect({ name: "x", roles: [role] })).toBe(true);
+  });
+  it("denies other roles and no viewer", () => {
+    expect(canManageDefect({ name: "x", roles: ["developer", "reporter"] })).toBe(false);
+    expect(canManageDefect(null)).toBe(false);
+  });
+  it("offers exactly Open, In progress, Closed", () => {
+    expect(STATUS_OPTIONS.map((o) => o.label)).toEqual(["Open", "In progress", "Closed"]);
+    expect(STATUS_OPTIONS.map((o) => o.value)).toEqual(["open", "in_progress", "closed"]);
   });
 });
