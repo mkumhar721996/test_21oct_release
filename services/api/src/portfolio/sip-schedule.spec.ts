@@ -16,7 +16,7 @@ const at = (iso: string) => new Date(`${iso}T00:00:00Z`);
 describe('sip schedule', () => {
   it('is due on the scheduled day (AC1)', () => {
     expect(dueDate(sip, at('2026-10-15'))).toBe('2026-10-15');
-    expect(dueDate(sip, at('2026-10-14'))).toBeNull();
+    expect(dueDate({ ...sip, lastRunOn: '2026-10-15' }, at('2026-10-14'))).toBeNull();
   });
 
   it('is not due again once that date has run (AC2)', () => {
@@ -54,7 +54,9 @@ describe('sip schedule', () => {
     ).toBe('2025-12-20');
   });
 
-  it('does not catch up a SIP that has never run', () => {
-    expect(dueDate(sip, at('2026-10-22'))).toBeNull();
+  it('treats a null lastRunOn as never run and catches up with one date (AC9)', () => {
+    expect(dueDate(sip, at('2026-10-22'))).toBe('2026-10-15');
+    expect(dueDate(sip, at('2026-10-10'))).toBe('2026-09-15');
+    expect(dueDate(sip, at('2026-10-15'))).toBe('2026-10-15');
   });
 });

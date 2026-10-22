@@ -15,6 +15,6 @@ export function latestScheduledDate(sip: Sip, today: Date): string | null {
 export function dueDate(sip: Sip, today: Date): string | null {
   const scheduled = latestScheduledDate(sip, today);
   if (scheduled === null) return null;
-  const due = sip.lastRunOn === null ? scheduled === isoDate(today) : sip.lastRunOn < scheduled;
-  return due ? scheduled : null;
+  // null means never run, so the latest scheduled date is the one to catch up on
+  return sip.lastRunOn === null || sip.lastRunOn < scheduled ? scheduled : null;
 }

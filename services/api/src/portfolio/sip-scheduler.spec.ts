@@ -26,4 +26,16 @@ describe('SipScheduler', () => {
     expect(svc.listHoldings()[0].investedAmount).toBe(sip.amount);
     expect(svc.listSips()[0].lastRunOn).toBe('2026-10-15');
   });
+
+  it('buys exactly once on bootstrap for a SIP that has never run (AC9)', () => {
+    const svc = new PortfolioService(new PriceFeedService(() => 1), {
+      holdings: [],
+      sips: [{ ...sip, lastRunOn: null }],
+    });
+    const scheduler = new SipScheduler(svc, () => new Date('2026-10-22T00:00:00Z'));
+    scheduler.onApplicationBootstrap();
+    scheduler.onModuleDestroy();
+    expect(svc.listHoldings()[0].investedAmount).toBe(sip.amount);
+    expect(svc.listSips()[0].lastRunOn).toBe('2026-10-15');
+  });
 });
