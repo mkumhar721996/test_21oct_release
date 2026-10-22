@@ -25,6 +25,8 @@ export interface DefectComment {
   createdAt: string;
 }
 
+export type PostCommentResult = { ok: true; comment: DefectComment } | { ok: false };
+
 export interface DefectDetail extends Defect {
   description: string;
   assignee: string | null;

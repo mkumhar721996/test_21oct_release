@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { DATE_FORMAT, SEVERITY_BADGE, STATUS_BADGE } from "@/components/defects/defect-row";
+import { CommentsSection } from "@/components/defects/comments-section";
+import { SEVERITY_BADGE, STATUS_BADGE } from "@/components/defects/defect-row";
 import { Icon } from "@/components/icon";
 import type { DefectDetail } from "@/lib/defects";
 
@@ -48,25 +49,7 @@ export function DefectDetailView({ defect }: { defect: DefectDetail }) {
           <p className="text-muted">No attachments yet</p>
         )}
       </section>
-      <section className="card stack stack-sm" aria-labelledby="comments-title">
-        <h2 id="comments-title" className="card-title">
-          Comments
-        </h2>
-        {defect.comments.length ? (
-          <ul className="stack stack-sm">
-            {defect.comments.map((c) => (
-              <li key={c.id}>
-                <div className="text-sm text-muted">
-                  <span className="text-bold">{c.author}</span> · {DATE_FORMAT.format(new Date(c.createdAt))}
-                </div>
-                <p>{c.body}</p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-muted">No comments yet</p>
-        )}
-      </section>
+      <CommentsSection defectId={defect.id} initialComments={defect.comments} />
     </div>
   );
 }

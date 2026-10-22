@@ -12,4 +12,16 @@ export async function setApiFailing(request: APIRequest, mode: "on" | "off" | "m
   if (!res.ok()) throw new Error(`setting api failure mode ${mode} failed: ${res.status()}`);
 }
 
+/** Makes the stub's POST /defects/:id/comments answer 500 ("on") or work again ("off"). */
+export async function setCommentPostFailing(request: APIRequest, on: boolean) {
+  const res = await request.post(`http://localhost:3101/__fail/comments/${on ? "on" : "off"}`);
+  if (!res.ok()) throw new Error(`setting comment failure ${on} failed: ${res.status()}`);
+}
+
+/** Every non-GET request the stub received since the last seed. */
+export async function getWrites(request: APIRequest): Promise<{ method: string; url: string }[]> {
+  const res = await request.get("http://localhost:3101/__writes");
+  return res.json();
+}
+
 type APIRequest = APIRequestContext;

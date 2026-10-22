@@ -14,8 +14,8 @@ test.describe("defect details", () => {
     await expect(page.getByText("Assignee: Dana Lee")).toBeVisible();
     await expect(page.getByRole("link", { name: "screenshot.png" })).toBeVisible();
     await expect(page.getByText("Reproduced on 17.1")).toBeVisible();
-    await expect(page.getByRole("button", { name: /assign|change status|post comment/i })).toHaveCount(0);
-    await expect(page.getByRole("textbox")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /assign|change status/i })).toHaveCount(0);
+    await expect(page.getByRole("textbox")).toHaveCount(1);
     await page.getByRole("link", { name: /back to list/i }).click();
     await expect(page).toHaveURL(/\/defects$/);
     await expect(page.getByRole("heading", { name: "Defects", level: 1 })).toBeVisible();
