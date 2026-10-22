@@ -3,7 +3,6 @@ export interface Holding {
   symbol: string;
   quantity: number;
   investedAmount: number;
-  currentValue: number;
 }
 
 export interface Sip {
@@ -14,11 +13,11 @@ export interface Sip {
 }
 
 export const DEMO_HOLDINGS: readonly Holding[] = [
-  { symbol: 'RELIANCE', quantity: 10, investedAmount: 2600000, currentValue: 2850000 },
-  { symbol: 'TCS', quantity: 5, investedAmount: 1900000, currentValue: 2050000 },
-  { symbol: 'INFY', quantity: 12, investedAmount: 2100000, currentValue: 2016000 },
-  { symbol: 'HDFCBANK', quantity: 8, investedAmount: 1300000, currentValue: 1376000 },
-  { symbol: 'ITC', quantity: 30, investedAmount: 1200000, currentValue: 1380000 },
+  { symbol: 'RELIANCE', quantity: 10, investedAmount: 2600000 },
+  { symbol: 'TCS', quantity: 5, investedAmount: 1900000 },
+  { symbol: 'INFY', quantity: 12, investedAmount: 2100000 },
+  { symbol: 'HDFCBANK', quantity: 8, investedAmount: 1300000 },
+  { symbol: 'ITC', quantity: 30, investedAmount: 1200000 },
 ];
 
 export const DEMO_SIPS: readonly Sip[] = [
