@@ -9,7 +9,10 @@ export interface Sip {
   id: string;
   symbol: string;
   amount: number;
-  dayOfMonth: number;
+  dayOfMonth: number; // stored as-is; only 1-28 ever runs
+  frequency: 'monthly' | 'weekly' | 'daily';
+  active: boolean;
+  lastRunOn: string | null; // 'YYYY-MM-DD' (UTC) of the scheduled date last executed
 }
 
 export const DEMO_HOLDINGS: readonly Holding[] = [
@@ -21,7 +24,7 @@ export const DEMO_HOLDINGS: readonly Holding[] = [
 ];
 
 export const DEMO_SIPS: readonly Sip[] = [
-  { id: 'sip-1', symbol: 'INFY', amount: 500000, dayOfMonth: 5 },
-  { id: 'sip-2', symbol: 'ITC', amount: 300000, dayOfMonth: 15 },
-  { id: 'sip-3', symbol: 'HDFCBANK', amount: 400000, dayOfMonth: 25 },
+  { id: 'sip-1', symbol: 'INFY', amount: 500000, dayOfMonth: 5, frequency: 'monthly', active: true, lastRunOn: null },
+  { id: 'sip-2', symbol: 'ITC', amount: 300000, dayOfMonth: 15, frequency: 'monthly', active: true, lastRunOn: null },
+  { id: 'sip-3', symbol: 'HDFCBANK', amount: 400000, dayOfMonth: 25, frequency: 'monthly', active: true, lastRunOn: null },
 ];
