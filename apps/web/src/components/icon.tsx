@@ -8,6 +8,7 @@ const PATHS = {
   "chevron-right": ["m9 18 6-6-6-6"],
   "chevron-down": ["m6 9 6 6 6-6"],
   search: ["m21 21-4.3-4.3"],
+  "arrow-left": ["m12 19-7-7 7-7", "M19 12H5"],
   x: ["M18 6 6 18", "m6 6 12 12"],
 } as const;
 

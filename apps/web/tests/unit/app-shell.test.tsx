@@ -11,6 +11,7 @@ describe("AppShell", () => {
     expect(within(nav).getByRole("link", { name: "Defects" }).getAttribute("href")).toBe("/defects");
     expect(within(nav).getByRole("link", { name: "Reports" }).getAttribute("href")).toBe("/reports");
     expect(within(nav).getByRole("link", { name: "Home" }).getAttribute("href")).toBe("/");
+    expect(within(nav).getByRole("link", { name: "Chats" }).getAttribute("href")).toBe("/chats");
   });
 
   it("marks the active entry with aria-current", () => {

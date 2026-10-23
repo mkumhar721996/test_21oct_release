@@ -8,6 +8,7 @@ const NAV = [
   { id: "home", label: "Home", href: "/" },
   { id: "defects", label: "Defects", href: "/defects" },
   { id: "reports", label: "Reports", href: "/reports" },
+  { id: "chats", label: "Chats", href: "/chats" },
 ];
 
 function isActive(href: string, pathname: string) {

@@ -346,3 +346,25 @@ a { color: var(--color-primary); }
   .shell-nav { display: block; width: auto; padding-bottom: 0; }
   .shell-nav ul { flex-direction: row; }
 }
+
+/* Chat */
+.chat-row { display: flex; align-items: center; gap: var(--space-3); width: 100%; min-height: var(--size-control-lg); padding: var(--space-2) var(--space-3); text-align: left; justify-content: flex-start; }
+.chat-row-text { display: flex; flex-direction: column; min-width: 0; }
+.chat-list { list-style: none; margin: 0; padding: 0; }
+.thread-bar { display: flex; align-items: center; gap: var(--space-2); }
+.thread { display: flex; flex-direction: column; gap: var(--space-2); height: calc(var(--size-popup) * 1.5); overflow-y: auto; padding: var(--space-3); background: var(--color-surface); border-radius: var(--radius-lg); scroll-behavior: auto; }
+.thread:focus-visible { outline: var(--focus-ring-width) solid var(--color-primary); outline-offset: var(--focus-ring-width); }
+.date-divider { align-self: center; margin-block: var(--space-2); background: var(--color-bg); border: var(--border-width) solid var(--color-border); color: var(--color-muted); }
+.msg { display: flex; align-items: flex-end; gap: var(--space-2); max-width: 85%; }
+.msg-received { align-self: flex-start; }
+.msg-sent { align-self: flex-end; }
+.bubble { padding: var(--space-2) var(--space-3); border-radius: var(--radius-lg); overflow-wrap: anywhere; }
+.msg-received .bubble { background: var(--color-bg); border: var(--border-width) solid var(--color-border); border-bottom-left-radius: var(--radius-sm); }
+.msg-sent .bubble { background: var(--color-primary); color: var(--color-primary-fg); border-bottom-right-radius: var(--radius-sm); }
+.msg-time { font-size: var(--font-size-sm); color: var(--color-muted); white-space: nowrap; }
+.voice { display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--size-control-md); padding: 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: default; }
+.voice:focus-visible { outline: var(--focus-ring-width) solid var(--color-primary); outline-offset: var(--focus-ring-width); }
+.voice-play { display: inline-flex; align-items: center; justify-content: center; width: var(--size-control-md); height: var(--size-control-md); border-radius: var(--radius-full); background: var(--color-primary); color: var(--color-primary-fg); }
+.voice-wave { display: inline-flex; align-items: center; gap: var(--space-1); height: var(--size-control-sm); }
+.voice-wave i { display: block; width: var(--space-1); border-radius: var(--radius-full); background: var(--color-muted); }
+.thread-empty { height: calc(var(--size-popup) * 1.5); justify-content: center; }
