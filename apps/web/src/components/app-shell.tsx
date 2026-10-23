@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
+import { UserSummary } from "@/components/auth/user-summary";
 
 const NAV = [
   { id: "home", label: "Home", href: "/" },
@@ -51,6 +52,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               ))}
             </ul>
           </nav>
+          <UserSummary />
         </div>
       </header>
       <main className="shell-main">
