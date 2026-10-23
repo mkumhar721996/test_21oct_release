@@ -1,5 +1,12 @@
 import { render, screen } from "@testing-library/react";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
+
+const router = { replace: vi.fn() };
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/",
+  useRouter: () => router,
+}));
+vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 }));
 import Home from "@/app/page";
 import { greeting } from "@/lib/greeting";
 

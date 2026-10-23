@@ -339,6 +339,12 @@ a { color: var(--color-primary); }
 .shell-nav a { display: block; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); color: var(--color-fg); text-decoration: none; }
 .shell-nav a:hover { background: var(--color-surface); }
 .shell-nav a[aria-current="page"] { background: var(--color-info-bg); color: var(--color-info); font-weight: var(--font-weight-medium); }
+.shell-user { justify-content: flex-end; }
+.signin-wrap { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); padding-block: var(--space-5); }
+.signin-card { width: 100%; max-width: 360px; }
+.id-list { display: grid; grid-template-columns: max-content 1fr; gap: var(--space-2) var(--space-4); margin: 0; }
+.id-list dt { color: var(--color-muted); }
+.id-list dd { margin: 0; font-weight: var(--font-weight-medium); overflow-wrap: anywhere; }
 .shell-main { flex: 1; min-width: 0; padding-block: var(--space-4); }
 .shell-footer { border-top: var(--border-width) solid var(--color-border); padding-block: var(--space-3); color: var(--color-muted); font-size: var(--font-size-sm); }
 @media (min-width: 48em) {
