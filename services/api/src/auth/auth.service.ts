@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { randomBytes } from 'node:crypto';
 import { Clock } from './clock';
-import { verifyPassword } from './password';
+import { hashPassword, verifyPassword } from './password';
 import { SEED_ORGANIZATIONS } from './seed-organizations';
 import { Role, SEED_USERS, SeedUser } from './seed-users';
 import { SessionStore } from './session.store';
@@ -10,6 +10,7 @@ export const MAX_FAILURES = 5;
 export const LOCK_MS = 15 * 60_000;
 export const IDLE_MS = 30 * 60_000;
 export const SIGN_IN_FAILED = 'Email or password is incorrect';
+const DUMMY_HASH = hashPassword('unused-dummy-password');
 
 export interface SessionUser {
   id: string;
@@ -35,12 +36,19 @@ export class AuthService {
   signIn(email: string, password: string): { token: string; user: SessionUser } {
     const normalized = String(email ?? '').trim().toLowerCase();
     const user = SEED_USERS.find((u) => u.email === normalized);
-    if (!user) throw new UnauthorizedException(SIGN_IN_FAILED);
+    if (!user) {
+      // Spend the same hashing time as a known email so response time does not reveal seeded accounts.
+      verifyPassword(String(password ?? ''), DUMMY_HASH);
+      throw new UnauthorizedException(SIGN_IN_FAILED);
+    }
 
     const now = this.clock.now();
     const state = this.failures.get(user.id) ?? { count: 0, lockedAt: null };
     if (state.lockedAt !== null) {
-      if (now - state.lockedAt < LOCK_MS) throw new UnauthorizedException(SIGN_IN_FAILED);
+      if (now - state.lockedAt < LOCK_MS) {
+        verifyPassword(String(password ?? ''), DUMMY_HASH);
+        throw new UnauthorizedException(SIGN_IN_FAILED);
+      }
       state.count = 0;
       state.lockedAt = null;
     }
