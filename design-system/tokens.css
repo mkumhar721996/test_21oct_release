@@ -18,6 +18,34 @@
   --color-warning-bg: #fef3c7; /** Warning tint */
   --color-info: #1d4ed8; /** Info */
   --color-info-bg: #dbeafe; /** Info tint */
+  --color-primary-hover: #1d4ed8; /** Primary hover state */
+  --color-primary-active: #1e40af; /** Primary pressed state */
+  --color-secondary: #475569; /** Secondary brand and action */
+  --color-secondary-hover: #334155; /** Secondary hover state */
+  --color-secondary-active: #1e293b; /** Secondary pressed state */
+  --color-accent: #7c3aed; /** Accent emphasis */
+  --color-accent-hover: #6d28d9; /** Accent hover state */
+  --color-accent-active: #5b21b6; /** Accent pressed state */
+  --color-accent-bg: #ede9fe; /** Accent tint */
+  --color-danger-hover: #991b1b; /** Danger hover state */
+  --color-danger-active: #7f1d1d; /** Danger pressed state */
+  --color-danger-border: #fca5a5; /** Danger tint border */
+  --color-success-hover: #166534; /** Success hover state */
+  --color-success-active: #14532d; /** Success pressed state */
+  --color-success-border: #86efac; /** Success tint border */
+  --color-warning-hover: #78350f; /** Warning hover state */
+  --color-warning-active: #451a03; /** Warning pressed state */
+  --color-warning-border: #fcd34d; /** Warning tint border */
+  --color-neutral-50: #f9fafb; /** Neutral shade 50 */
+  --color-neutral-100: #f3f4f6; /** Neutral shade 100 */
+  --color-neutral-200: #e5e7eb; /** Neutral shade 200 */
+  --color-neutral-300: #d1d5db; /** Neutral shade 300 */
+  --color-neutral-400: #9ca3af; /** Neutral shade 400 */
+  --color-neutral-500: #6b7280; /** Neutral shade 500 */
+  --color-neutral-600: #4b5563; /** Neutral shade 600 */
+  --color-neutral-700: #374151; /** Neutral shade 700 */
+  --color-neutral-800: #1f2937; /** Neutral shade 800 */
+  --color-neutral-900: #111827; /** Neutral shade 900 */
   --space-1: 4px; /** Spacing step 1 */
   --space-2: 8px; /** Spacing step 2 */
   --space-3: 16px; /** Spacing step 3 */
@@ -58,6 +86,14 @@
   --button-secondary-color: var(--color-fg); /** Secondary button text */
   --button-danger-background: var(--color-danger); /** Danger button fill */
   --button-danger-color: var(--color-primary-fg); /** Danger button text */
+  --button-primary-background-hover: var(--color-primary-hover); /** Primary button fill on hover */
+  --button-primary-background-active: var(--color-primary-active); /** Primary button fill when pressed */
+  --button-danger-background-hover: var(--color-danger-hover); /** Danger button fill on hover */
+  --button-danger-background-active: var(--color-danger-active); /** Danger button fill when pressed */
+  --button-accent-background: var(--color-accent); /** Accent button fill */
+  --button-accent-background-hover: var(--color-accent-hover); /** Accent button fill on hover */
+  --button-accent-background-active: var(--color-accent-active); /** Accent button fill when pressed */
+  --button-accent-color: var(--color-primary-fg); /** Accent button text */
   --button-default-radius: var(--radius-md); /** Button radius */
   --card-default-background: var(--color-bg); /** Card fill */
   --card-default-border: var(--color-border); /** Card border */

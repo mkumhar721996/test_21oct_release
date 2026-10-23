@@ -1,8 +1,8 @@
 # UI Guidelines — Web App
 
 ## Navigation and information architecture
-- Top bar only, no sidebar: the app is a single-page starter (one root route, "Home"), so a sidebar would be empty chrome.
-- The shell has the brand "Web App" at left, one main destination — **Home** (`data-nav-key="home"`) — and a footer. Add a destination only when a real route exists, appended after Home, so the shell mirrors the routes.
+- Top bar only, no sidebar: the app has just three top-level routes, so a sidebar would be mostly empty chrome.
+- The shell has the brand "Web App" at left, three main destinations in order — **Home** (`data-nav-key="home"`), **Defects** (`defects`), **Reports** (`reports`) — and a footer. Add a destination only when a real route exists, appended after Reports, so the shell mirrors the routes.
 - On small screens the nav collapses behind a menu button, because the top bar must never overflow a phone width.
 
 ## Layout and density
@@ -17,6 +17,8 @@
 - `.alert` for inline, persistent messages; `.toast` for transient confirmations; `.modal` only for decisions that block progress; `.drawer` for secondary detail or edit panels — so interruption matches importance.
 - `.empty-state` and `.skeleton` for no-data and loading, rather than blank space, so users can tell waiting from nothing.
 - Status is always a `.badge` variant (neutral/success/warning/danger), because colour meaning must be consistent.
+- Use `color-accent` (`.btn-accent`) sparingly for one promotional highlight, and the `color-neutral-*` shades for non-status chrome, so status colours keep their meaning.
+- Hover and pressed fills come from the `*-hover` / `*-active` tokens (via the `button-*` aliases), never from opacity or ad-hoc shades, so interaction feedback stays consistent.
 
 ## Theme
 - Light only (`color-bg` with `color-fg`); the app ships no dark theme, so a second palette would add untested surface area. Revisit if the product gains one.
